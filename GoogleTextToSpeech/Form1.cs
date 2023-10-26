@@ -2,6 +2,7 @@ using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Speech.V1;
 using GoogleTextToSpeech.Entities;
 using Grpc.Auth;
+using Microsoft.Extensions.Configuration;
 using NAudio.Utils;
 using NAudio.Wave;
 using Newtonsoft.Json;
@@ -23,9 +24,13 @@ namespace GoogleTextToSpeech
 		WaveFileWriter writer;
 		WaveFileReader reader;
 		string output = "audio.raw";
+		private readonly IConfiguration _configuration;
 
-		public Form1()
+		
+
+		public Form1(IConfiguration configuration)
 		{
+			_configuration = configuration;
 			InitializeComponent();
 			EnumerateAudioEndPoints();
 		}
@@ -85,7 +90,7 @@ namespace GoogleTextToSpeech
 
 			#region Google Cloud Set Up Speech To Text Communication
 			GoogleCredential credentials;
-			using (var stream = new FileStream("C:\\Users\\akitou\\Desktop\\lyrical-marker-402608-ec3896f82d1b.json", FileMode.Open, FileAccess.Read))
+			using (var stream = new FileStream(_configuration["JsonFilePath"], FileMode.Open, FileAccess.Read))
 			{
 				credentials = GoogleCredential.FromStream(stream);
 			}
@@ -171,24 +176,16 @@ namespace GoogleTextToSpeech
 				waveIn.StopRecording();
 				waveIn.Dispose();
 				waveIn = null;
-				SoundBar.Invoke((MethodInvoker)delegate { SoundBar.Value = 0; });
-				MessageBox.Show("Goodbye");
-				Application.Exit();
-			}
-			if (this.writer == null)
-			{
-
-				SoundBar.Invoke((MethodInvoker)delegate { SoundBar.Value = 0; });
-				MessageBox.Show("Goodbye");
-				Application.Exit();
-				return;
 			}
 
+			ExitApplicationWithMessage();
+		}
+		private void ExitApplicationWithMessage()
+		{
 			SoundBar.Invoke((MethodInvoker)delegate { SoundBar.Value = 0; });
 			MessageBox.Show("Goodbye");
 			Application.Exit();
 		}
-
 		private void btnSave_Click(object sender, EventArgs e)
 		{
 			waveIn.StopRecording();
@@ -223,7 +220,6 @@ namespace GoogleTextToSpeech
 			SpeechTransform();
 
 		}
-
 		private void SpeechTransform()
 		{
 
@@ -234,7 +230,7 @@ namespace GoogleTextToSpeech
 			{
 
 				GoogleCredential credentials;
-				using (var stream = new FileStream("C:\\Users\\akitou\\Desktop\\lyrical-marker-402608-ec3896f82d1b.json", FileMode.Open, FileAccess.Read))
+				using (var stream = new FileStream(_configuration["JsonFilePath"], FileMode.Open, FileAccess.Read))
 				{
 					credentials = GoogleCredential.FromStream(stream);
 				}
