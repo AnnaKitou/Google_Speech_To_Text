@@ -14,6 +14,7 @@ namespace GoogleTextToSpeech
 	{
 
 		private BufferedWaveProvider bwp;
+		private SpeechClient.StreamingRecognizeStream _streamingCall;
 
 		int AudioEndPointId;
 
@@ -37,7 +38,7 @@ namespace GoogleTextToSpeech
 			var SelectedItemDeserialized = JsonConvert.DeserializeObject<ComboboxValue>(SelectedItemSerialized);
 			AudioEndPointId = SelectedItemDeserialized.Id;
 		}
-		void WaveIn_DataAvailable(object sender, WaveInEventArgs e)
+		async void WaveIn_DataAvailable(object sender, WaveInEventArgs e)
 		{
 			Int16[] values = new Int16[e.Buffer.Length / 2];
 			Buffer.BlockCopy(e.Buffer, 0, values, 0, e.Buffer.Length);
@@ -49,7 +50,21 @@ namespace GoogleTextToSpeech
 			SoundBar.Invoke((MethodInvoker)delegate { SoundBar.Value = (int)(fraction * 70); });
 
 			bwp.AddSamples(e.Buffer, 0, e.BytesRecorded);
-		
+
+			var audioRequest = new StreamingRecognizeRequest
+			{
+				AudioContent = Google.Protobuf.ByteString.CopyFrom(e.Buffer, 0, e.BytesRecorded)
+			};
+			try
+			{
+				await _streamingCall.WriteAsync(audioRequest);
+			}
+			catch (Grpc.Core.RpcException ex)
+			{
+
+			}
+
+
 		}
 
 		private void btnRecordVoice_Click_1(object sender, EventArgs e)
@@ -61,8 +76,7 @@ namespace GoogleTextToSpeech
 				BufferMilliseconds = 20
 			};
 
-			waveIn.DataAvailable += WaveIn_DataAvailable;
-			waveIn.StartRecording();
+
 			bwp = new BufferedWaveProvider(waveIn.WaveFormat);
 			bwp.DiscardOnBufferOverflow = true;
 
@@ -70,12 +84,62 @@ namespace GoogleTextToSpeech
 			btnSave.Enabled = true;
 			btnSpeechInfo.Enabled = false;
 
+			GoogleCredential credentials;
+			using (var stream = new FileStream("C:\\Users\\akitou\\Desktop\\lyrical-marker-402608-ec3896f82d1b.json", FileMode.Open, FileAccess.Read))
+			{
+				credentials = GoogleCredential.FromStream(stream);
+			}
+
+			var channel = new Grpc.Core.Channel(SpeechClient.DefaultEndpoint.ToString(), credentials.ToChannelCredentials());
+			var speech = CreateSpeechClient(credentials);
+
+
+			_streamingCall = speech.StreamingRecognize();
+
+			var configRequest = new StreamingRecognizeRequest
+			{
+				StreamingConfig = new StreamingRecognitionConfig
+				{
+					Config = new RecognitionConfig
+					{
+						Encoding = RecognitionConfig.Types.AudioEncoding.Linear16,
+						SampleRateHertz = 44100,
+						LanguageCode = "el-GR"
+					},
+					InterimResults = true
+				}
+			};
+
+			_streamingCall.WriteAsync(configRequest).Wait();
+
+
+			// Start a task to listen to the responses and update the textbox
+			Task.Run(async () =>
+			{
+				var responseStream = _streamingCall.GetResponseStream();
+				while (await responseStream.MoveNextAsync(CancellationToken.None))
+				{
+					foreach (var result in _streamingCall.GetResponseStream().Current.Results)
+					{
+						if (result.Alternatives != null && result.Alternatives.Count > 0)
+						{
+							textBox1.Invoke((MethodInvoker)delegate
+							{
+								textBox1.Text = result.Alternatives[0].Transcript;
+							});
+						}
+					}
+				}
+			});
+			waveIn.DataAvailable += WaveIn_DataAvailable;
+			waveIn.StartRecording();
 			//waveOut = new WaveOut();
 			//waveOut.Init(bwp);
 			//////waveOut.PlaybackStopped += new EventHandler<StoppedEventArgs>(waveOut_PlaybackStopped);
-			//waveOut.Play();
+
 			waveOut = new WaveOut();
 			waveOut.Init(bwp);
+			waveOut.Play();
 		}
 
 
