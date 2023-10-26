@@ -81,8 +81,7 @@ namespace GoogleTextToSpeech
 			bwp.DiscardOnBufferOverflow = true;
 
 			btnRecordVoice.Enabled = false;
-			btnSave.Enabled = true;
-			btnSpeechInfo.Enabled = false;
+			btnSave.Enabled = false;
 
 			GoogleCredential credentials;
 			using (var stream = new FileStream("C:\\Users\\akitou\\Desktop\\lyrical-marker-402608-ec3896f82d1b.json", FileMode.Open, FileAccess.Read))
@@ -192,7 +191,6 @@ namespace GoogleTextToSpeech
 
 			btnRecordVoice.Enabled = false;
 			btnSave.Enabled = false;
-			btnSpeechInfo.Enabled = true;
 
 			byte[] buffer = new byte[bwp.BufferLength];
 			int offset = 0;
@@ -223,7 +221,6 @@ namespace GoogleTextToSpeech
 
 			btnRecordVoice.Enabled = true;
 			btnSave.Enabled = false;
-			btnSpeechInfo.Enabled = false;
 
 			if (File.Exists("audio.raw"))
 			{

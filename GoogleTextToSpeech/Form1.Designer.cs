@@ -31,7 +31,6 @@
 			components = new System.ComponentModel.Container();
 			btnRecordVoice = new Button();
 			btnSave = new Button();
-			btnSpeechInfo = new Button();
 			PauseBtn = new Button();
 			bindingSource1 = new BindingSource(components);
 			SoundBar = new ProgressBar();
@@ -54,22 +53,14 @@
 			// 
 			// btnSave
 			// 
+			btnSave.Enabled = false;
 			btnSave.Location = new Point(33, 162);
 			btnSave.Name = "btnSave";
 			btnSave.Size = new Size(112, 34);
 			btnSave.TabIndex = 1;
 			btnSave.Text = "Save";
 			btnSave.UseVisualStyleBackColor = true;
-			btnSave.Click += this.btnSave_Click;
-			// 
-			// btnSpeechInfo
-			// 
-			btnSpeechInfo.Location = new Point(384, 162);
-			btnSpeechInfo.Name = "btnSpeechInfo";
-			btnSpeechInfo.Size = new Size(112, 34);
-			btnSpeechInfo.TabIndex = 2;
-			btnSpeechInfo.Text = "Convert";
-			btnSpeechInfo.UseVisualStyleBackColor = true;
+			btnSave.Click += btnSave_Click;
 			// 
 			// PauseBtn
 			// 
@@ -79,7 +70,7 @@
 			PauseBtn.TabIndex = 3;
 			PauseBtn.Text = "Pause";
 			PauseBtn.UseVisualStyleBackColor = true;
-			PauseBtn.Click += this.PauseBtn_Click;
+			PauseBtn.Click += PauseBtn_Click;
 			// 
 			// SoundBar
 			// 
@@ -114,7 +105,7 @@
 			StopBtn.TabIndex = 8;
 			StopBtn.Text = "Stop";
 			StopBtn.UseVisualStyleBackColor = true;
-			StopBtn.Click += this.StopBtn_Click;
+			StopBtn.Click += StopBtn_Click;
 			// 
 			// textBox1
 			// 
@@ -135,13 +126,12 @@
 			Controls.Add(InputListCb);
 			Controls.Add(label1);
 			Controls.Add(PauseBtn);
-			Controls.Add(btnSpeechInfo);
 			Controls.Add(btnSave);
 			Controls.Add(btnRecordVoice);
 			Controls.Add(SoundBar);
 			Name = "Form1";
 			Text = "Form1";
-			Load += this.Form1_Load;
+			Load += Form1_Load;
 			((System.ComponentModel.ISupportInitialize)bindingSource1).EndInit();
 			ResumeLayout(false);
 			PerformLayout();
@@ -151,7 +141,6 @@
 
 		private Button btnRecordVoice;
 		private Button btnSave;
-		private Button btnSpeechInfo;
 		private Button PauseBtn;
 		private BindingSource bindingSource1;
 		private ProgressBar SoundBar;
