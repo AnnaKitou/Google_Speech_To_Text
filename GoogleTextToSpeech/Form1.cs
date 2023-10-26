@@ -50,6 +50,7 @@ namespace GoogleTextToSpeech
 
 			bwp.AddSamples(e.Buffer, 0, e.BytesRecorded);
 
+			#region Google Cloud Set Up Speech To Text Communication
 			var audioRequest = new StreamingRecognizeRequest
 			{
 				AudioContent = Google.Protobuf.ByteString.CopyFrom(e.Buffer, 0, e.BytesRecorded)
@@ -62,6 +63,7 @@ namespace GoogleTextToSpeech
 			{
 
 			}
+			#endregion
 
 
 		}
@@ -81,6 +83,7 @@ namespace GoogleTextToSpeech
 			btnRecordVoice.Enabled = false;
 			btnSave.Enabled = false;
 
+			#region Google Cloud Set Up Speech To Text Communication
 			GoogleCredential credentials;
 			using (var stream = new FileStream("C:\\Users\\akitou\\Desktop\\lyrical-marker-402608-ec3896f82d1b.json", FileMode.Open, FileAccess.Read))
 			{
@@ -128,10 +131,10 @@ namespace GoogleTextToSpeech
 					}
 				}
 			});
+			#endregion
+
 			waveIn.DataAvailable += WaveIn_DataAvailable;
 			waveIn.StartRecording();
-			//waveOut = new WaveOut();
-			//waveOut.Init(bwp);
 			//////waveOut.PlaybackStopped += new EventHandler<StoppedEventArgs>(waveOut_PlaybackStopped);
 
 			waveOut = new WaveOut();
@@ -168,13 +171,22 @@ namespace GoogleTextToSpeech
 				waveIn.StopRecording();
 				waveIn.Dispose();
 				waveIn = null;
+				SoundBar.Invoke((MethodInvoker)delegate { SoundBar.Value = 0; });
+				MessageBox.Show("Goodbye");
+				Application.Exit();
 			}
 			if (this.writer == null)
 			{
+
+				SoundBar.Invoke((MethodInvoker)delegate { SoundBar.Value = 0; });
+				MessageBox.Show("Goodbye");
+				Application.Exit();
 				return;
 			}
 
 			SoundBar.Invoke((MethodInvoker)delegate { SoundBar.Value = 0; });
+			MessageBox.Show("Goodbye");
+			Application.Exit();
 		}
 
 		private void btnSave_Click(object sender, EventArgs e)

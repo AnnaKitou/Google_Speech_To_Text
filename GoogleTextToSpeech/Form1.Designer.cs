@@ -64,6 +64,7 @@
 			// 
 			// PauseBtn
 			// 
+			PauseBtn.Enabled = false;
 			PauseBtn.Location = new Point(221, 91);
 			PauseBtn.Name = "PauseBtn";
 			PauseBtn.Size = new Size(112, 34);
