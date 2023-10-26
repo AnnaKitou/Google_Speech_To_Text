@@ -22,7 +22,6 @@ namespace GoogleTextToSpeech
 		WaveOut waveOut;
 		WaveFileWriter writer;
 		WaveFileReader reader;
-		private MemoryStream audioStream = new MemoryStream();
 		string output = "audio.raw";
 
 		public Form1()
@@ -66,7 +65,6 @@ namespace GoogleTextToSpeech
 
 
 		}
-
 		private void btnRecordVoice_Click_1(object sender, EventArgs e)
 		{
 			waveIn = new NAudio.Wave.WaveInEvent
@@ -141,7 +139,6 @@ namespace GoogleTextToSpeech
 			waveOut.Play();
 		}
 
-
 		private void waveOut_PlaybackStopped(object sender, StoppedEventArgs e)
 		{
 
@@ -214,7 +211,6 @@ namespace GoogleTextToSpeech
 			SpeechTransform();
 
 		}
-
 
 		private void SpeechTransform()
 		{
